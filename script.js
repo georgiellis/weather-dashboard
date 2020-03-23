@@ -44,7 +44,7 @@ function searchCity(cityname) {
             currentIcon.attr("style", "height: 60px; width: 60px");
         }
 
-    //html div to append elements
+        //html div to append elements
 
         var newDiv = $('<div>');
 
@@ -52,9 +52,89 @@ function searchCity(cityname) {
 
             $("#current").html(newDiv);
     
-    // UV call
+         // UV call
 
-    // 5 day forecast call
+        var lat = response.coord.lat;
+        var lon = response.coord.lon;
+        var queryURLUV = "https://api.openweathermap.org/data/2.5/uvi?&appid=ecc0be5fd92206da3aa90cc41c13ca56&lat=" + lat  + "&lon=" + lon;
+        
+                $.ajax({
+                    url: queryURLUV,
+                    method: 'GET'
+                }).then(function (response) {
+                    $('#uvl-display').empty();
+                    var uvlresults = response.value;
+                    //create HTML for new div
+                    var uvlEl = $("<button class='btn bg-success'>").text("UV Index: " + response.value);
+            
+                    $('#uvl-display').html(uvlEl);
+            
+                });
+            });
+
+
+        // 5 day forecast call
+
+        $.ajax({
+            url: queryURLforecast,
+            method: 'GET'
+        }).then(function (response) {
+            // storing array of results in the results variable
+            var results = response.list;
+            //empty 5day div--------
+            $("#5day").empty();
+            // create HTML for 5 day forecast
+            for (var i = 0; i < results.length; i += 8) {
+                // creating a div
+                var fiveDayDiv = $("<div class='card shadow-lg text-white bg-primary mx-auto mb-10 p-2' style='width: 8.5rem; height: 11rem;'>");
+                
+                // storing the responses date temp and humidity
+                var date = results[i].dt_txt;
+                var setD = date.substr(0,10)
+                var temp = results[i].main.temp;
+                var hum = results[i].main.humidity;
+
+                // creating tags with the result items information
+                var h5date = $("<h5 class='card-title'>").text(setD);
+                var pTemp = $("<p class='card-text'>").text("Temp: " + temp);;
+                var pHum = $("<p class='card-text'>").text("Humidity " + hum);;
+
+                var weather = results[i].weather[0].main
+
+                if (weather === "Rain") {
+                    var icon = $('<img>').attr("src", "http://openweathermap.org/img/wn/09d.png");
+                    icon.attr("style", "height: 40px; width: 40px");
+                } else if (weather === "Clouds") {
+                    var icon = $('<img>').attr("src", "http://openweathermap.org/img/wn/03d.png");
+                    icon.attr("style", "height: 40px; width: 40px");
+                } 
+                    else if (weather === "Clear") {
+                    var icon = $('<img>').attr("src", "http://openweathermap.org/img/wn/01d.png");
+                    icon.attr("style", "height: 40px; width: 40px");
+                }
+                    else if (weather === "Drizzle") {
+                    var icon = $('<img>').attr("src", "http://openweathermap.org/img/wn/10d.png");
+                    icon.attr("style", "height: 40px; width: 40px");
+                }
+                    else if (weather === "Snow") {
+                    var icon = $('<img>').attr("src", "http://openweathermap.org/img/wn/13d.png");
+                    icon.attr("style", "height: 40px; width: 40px");
+                }
+
+                // append items to
+                fiveDayDiv.append(h5date);
+                fiveDayDiv.append(icon);
+                fiveDayDiv.append(pTemp);
+                fiveDayDiv.append(pHum);
+                $("#5day").append(fiveDayDiv);
+            }
+
+        });
+
+
+
+}
+pageLoad();
 
     // event handler city search
 
