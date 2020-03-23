@@ -70,7 +70,7 @@ function searchCity(cityname) {
                     $('#uvl-display').html(uvlEl);
             
                 });
-            });
+    });
 
 
         // 5 day forecast call
@@ -130,14 +130,44 @@ function searchCity(cityname) {
             }
 
         });
+    
 
 
-
-}
-pageLoad();
+    }   
+    pageLoad();
 
     // event handler city search
 
-    // call stored items on page load
+    $("#select-city").on("click", function (event) {
+        // rreventing button from trying to submit form
+        event.preventDefault();
+        // storing city name
+        var cityInput = $("#city-input").val().trim();
+    
+        // save search term to local storage
+        var textContent = $(this).siblings("input").val();
+        var storearr = [];
+        storearr.push(textContent);
+        localStorage.setItem('cityName', JSON.stringify(storearr));
+      
+        searchCity(cityInput);
+        pageLoad();
+    });
 
+    // call stored items on page load
+    function pageLoad () {
+        var lastSearch = JSON.parse(localStorage.getItem("cityName"));
+        var searchDiv = $("<button class='btn border text-muted mt-1 shadow-sm bg-white rounded' style='width: 12rem;'>").text(lastSearch);
+        var psearch = $("<div>");
+        psearch.append(searchDiv)
+        $("#searchhistory").prepend(psearch);
+    }
+    
+    // event deligation...
+    $("#searchhistory").on('click', '.btn', function(event) {
+    event.preventDefault();
+        console.log($(this).text());
+        searchCity($(this).text());
+    
+    });
 
